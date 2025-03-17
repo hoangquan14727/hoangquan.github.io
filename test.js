@@ -953,5 +953,13 @@ setInterval(function () {
           window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // Chuyển hướng về trang trống
      }
 }, 1000);
+window.addEventListener('touchmove', function (event) {
+     if (window.scrollY === 0) {
+          event.preventDefault();
+     }
+}, { passive: false });
 
+window.addEventListener("touchmove", function (event) {
+     event.preventDefault();
+}, { passive: false });
 
