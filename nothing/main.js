@@ -359,3 +359,9 @@ setInterval(function () {
           window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // Chuyển hướng về trang trống
      }
 }, 1000);
+
+window.addEventListener("load", function () {
+     setTimeout(() => {
+          document.getElementById("loading-screen").classList.add("loaded");
+     }, 1000); // Hiển thị loading tối thiểu 1 giây trước khi ẩn
+});
