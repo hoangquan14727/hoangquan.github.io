@@ -845,60 +845,50 @@ if (topupBtn) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-     console.log("DOM đã tải xong!");
-
      var qrButton = document.getElementById("scanQRButton");
      var qrContainer = document.getElementById("qr-container");
      var closeQRButton = document.getElementById("closeQRButton");
 
-     // Kiểm tra nếu các phần tử có tồn tại không
      if (!qrButton || !qrContainer || !closeQRButton) {
           console.error("Không tìm thấy các phần tử cần thiết!");
           return;
      }
 
-     console.log("Nút QuétQR đã tìm thấy!");
-
-     // Lấy tất cả các phần tử cần ẩn
      var elementsToHide = document.querySelectorAll(".glass-card, .payment-container, .container");
 
      qrButton.addEventListener("click", function () {
-          console.log("Nút QuétQR được bấm!");
+          console.log("Mở QR Code!");
 
-          // Ẩn toàn bộ giao diện thẻ
+          // Ẩn giao diện chính
           elementsToHide.forEach(el => {
                el.style.transition = "opacity 0.5s ease-out";
                el.style.opacity = "0";
                setTimeout(() => { el.style.display = "none"; }, 500);
           });
 
-          // Hiện QR Code
-          qrContainer.style.display = "flex"; // Sử dụng flex để căn giữa
+          // Hiển thị QR Code với hiệu ứng mượt
+          qrContainer.style.display = "flex";
           setTimeout(() => { qrContainer.style.opacity = "1"; }, 50);
      });
 
-
-     // Sự kiện khi nhấn nút Đóng
      closeQRButton.addEventListener("click", function () {
           console.log("Đóng QR Code!");
 
-          // Ẩn QR code
+          // Ẩn QR Code với hiệu ứng mượt
           qrContainer.style.opacity = "0";
-          setTimeout(() => { qrContainer.style.display = "none"; }, 500);
+          setTimeout(() => {
+               qrContainer.style.display = "none";
 
-          // Đặt lại toàn bộ giao diện về trạng thái ban đầu
-          elementsToHide.forEach(el => {
-               el.style.removeProperty("opacity");
-               el.style.removeProperty("display");
-               el.style.removeProperty("transform");
-               el.style.removeProperty("transition");
-          });
+               // Sau khi QR Code tắt hẳn thì hiện lại giao diện chính
+               elementsToHide.forEach(el => {
+                    el.style.display = "block";
+                    setTimeout(() => {
+                         el.style.opacity = "1";
+                    }, 50);
+               });
 
-          // Đặt lại body nếu cần
-          document.body.style.removeProperty("background");
-     });
-
-
+          }, 500);
+     })
      // Kiểm tra WebGL có hoạt động không
      var canvas = document.getElementById("sakura");
      if (canvas) {
@@ -931,57 +921,37 @@ function toggleDropdown() {
      }
 }
 
-function copyToClipboard(text) {
-     navigator.clipboard.writeText(text).then(() => {
-          showCopyPopup(); // Gọi hàm hiển thị pop-up
-     }).catch(err => {
-          console.error("Lỗi sao chép: ", err);
-     });
-}
-function copyToClipboard(text) {
-     navigator.clipboard.writeText(text).then(() => {
-          showCopyPopup(); // Hiển thị thông báo
-     }).catch(err => {
-          console.error("Lỗi sao chép: ", err);
-     });
-}
-
-function showCopyPopup() {
-     const popup = document.getElementById("copy-popup");
-     popup.classList.add("show");
-
-     // Hiệu ứng rung nhẹ khi hiển thị
-     popup.style.animation = "shake 0.3s ease-in-out";
-
-     // Ẩn pop-up sau 2 giây
-     setTimeout(() => {
-          popup.classList.remove("show");
-     }, 2000);
-}
-function copyToClipboard(text) {
-     if (!navigator.clipboard) {
-          alert("Trình duyệt không hỗ trợ sao chép tự động! Hãy sao chép thủ công.");
-          return;
-     }
-
-     navigator.clipboard.writeText(text).then(() => {
-          showCopyPopup();
-     }).catch(err => {
-          console.error("Lỗi sao chép: ", err);
-          alert("Không thể sao chép, hãy thử lại.");
-     });
-}
-document.addEventListener("DOMContentLoaded", function () {
-     document.querySelectorAll(".copy-btn").forEach(button => {
-          button.addEventListener("click", function () {
-               const stk = this.getAttribute("data-account");
-               copyToClipboard(stk);
-          });
-     });
-});
 
 window.addEventListener("load", function () {
      setTimeout(() => {
           document.getElementById("loading-screen").classList.add("loaded");
      }, 1000); // Hiển thị loading tối thiểu 1 giây trước khi ẩn
 });
+
+document.addEventListener("contextmenu", function (event) {
+     event.preventDefault(); // Chặn chuột phải
+     alert("Ai cho xem");
+});
+
+document.addEventListener("keydown", function (event) {
+     if (event.key === "F12" ||
+          (event.ctrlKey && event.shiftKey && event.key === "I") ||
+          (event.ctrlKey && event.shiftKey && event.key === "J") ||
+          (event.ctrlKey && event.key === "U")) {
+          event.preventDefault(); // Chặn F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+          alert("Ai cho xem");
+     }
+});
+
+// Phát hiện mở Developer Tools và cảnh báo
+setInterval(function () {
+     let before = new Date().getTime();
+     debugger;
+     let after = new Date().getTime();
+     if (after - before > 200) {
+          alert("Ai cho xem");
+          window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // Chuyển hướng về trang trống
+     }
+}, 1000);
+
+

@@ -6,7 +6,6 @@
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
      <title>Ng Hoang Quan Profile</title>
-     <script src="test.js"></script>
      <script id="sakura_point_vsh" type="x-shader/x_vertex">
           uniform mat4 uProjection;
           uniform mat4 uModelview;
@@ -867,6 +866,53 @@
                     /* Adjust button height */
                }
           }
+
+          #qr-container {
+               display: flex;
+               flex-direction: column;
+               align-items: center;
+               position: fixed;
+               top: 50%;
+               left: 50%;
+               transform: translate(-50%, -50%);
+               background: white;
+               padding: 20px;
+               border-radius: 10px;
+               text-align: center;
+               z-index: 1000;
+               opacity: 0;
+               transition: opacity 0.5s ease-in-out;
+               box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+          }
+
+          #qr-container #qr-code-img {
+               width: 300px;
+               height: 300%;
+          }
+
+          /* Di chuyển nút Đóng lên trên */
+          #closeQRButton {
+               position: absolute;
+               top: -10px;
+               right: -10px;
+               background: red;
+               color: white;
+               border: none;
+               border-radius: 50%;
+               width: 30px;
+               height: 30px;
+               font-size: 16px;
+               font-weight: bold;
+               cursor: pointer;
+               transition: background 0.3s;
+               justify-content: center;
+               align-items: center;
+               text-align: center;
+          }
+
+          #closeQRButton:hover {
+               background: darkred;
+          }
      </style>
 </head>
 
@@ -902,9 +948,10 @@
                          <span></span>
                          <p data-start="good luck!" data-text="Click here" data-title="Link Sever"></p>
                     </button>
-               </div>
-               <div class="info">
-                    <p>🔥Thanh toán bằng cách ấn vào nút more🔥</p>
+                    <button class="btn" id="scanQRButton">
+                         <span></span>
+                         <p data-start="good luck!" data-text="Click here" data-title="Mã QR"></p>
+                    </button>
                </div>
           </div>
      </div>
@@ -924,11 +971,21 @@
           <div id="topup-dropdown" class="dropdown-content">
                <h2>Option</h2>
                <div class="input">
-                    <button class="value" onclick="window.location.href='index1.html'">Thanh Toán</button>
+                    <button class="value" onclick="window.open('../nothing/index1.html', '_blank')">
+                         Silly Things
+                    </button>
                </div>
           </div>
-     </div>
 
+     </div>
+     <div id="qr-container">
+          <img id="qr-code-img"
+               src="https://scontent.fsgn20-1.fna.fbcdn.net/v/t1.15752-9/476489406_557704010003441_965375085000101627_n.jpg?_nc_cat=102&ccb=1-7&_nc_sid=9f807c&_nc_ohc=F1agU6Gi0wwQ7kNvgFUtyxk&_nc_oc=AdiLu2w1zcryYsu6SrFUvVKM9n4XCBALZo4AB8MVCC5JrW7raoNx7kjDxjI1ELO0yjYGB59zxwr0RxIb54GktHwC&_nc_zt=23&_nc_ht=scontent.fsgn20-1.fna&oh=03_Q7cD1wErdYLKNlfHbv_U5FgboWtt4lOPEvezApAbpdO8ez8J2Q&oe=67FDCEA6"
+               alt="QR Code">
+          <button id="closeQRButton">X</button>
+          <p>THESIEURE: 0966391407</p>
+     </div>
+     <script src="test.js"></script>
 </body>
 
 </html>
