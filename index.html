@@ -743,33 +743,6 @@
                width: 15px
           }
 
-          /* Màn hình loading */
-          #loading-screen {
-               position: fixed;
-               top: 0;
-               left: 0;
-               width: 100%;
-               height: 100%;
-               background-color: #fff;
-               /* Màu nền khi loading */
-               display: flex;
-               align-items: center;
-               justify-content: center;
-               z-index: 9999;
-               transition: opacity 0.5s ease-out;
-          }
-
-          #loading-screen img {
-               width: 400px;
-               /* Điều chỉnh kích thước ảnh */
-               height: auto;
-          }
-
-          /* Ẩn loading khi hoàn tất */
-          .loaded {
-               opacity: 0;
-               pointer-events: none;
-          }
 
           /* Mobile Styles */
           @media (max-width: 768px) {
@@ -971,7 +944,7 @@
           <div id="topup-dropdown" class="dropdown-content">
                <h2>Option</h2>
                <div class="input">
-                    <button class="value" onclick="window.open('../nothing/index1.html', '_blank')">
+                    <button class="value" onclick="window.open('./nothing/index1.html', '_blank')">
                          Silly Things
                     </button>
                </div>
