@@ -879,16 +879,23 @@ document.addEventListener("DOMContentLoaded", function () {
           setTimeout(() => {
                qrContainer.style.display = "none";
 
-               // Sau khi QR Code tắt hẳn thì hiện lại giao diện chính
-               elementsToHide.forEach(el => {
-                    el.style.display = "block";
+               // Hiển thị từng phần tử với hiệu ứng xuất hiện dần dần
+               elementsToHide.forEach((el, index) => {
                     setTimeout(() => {
-                         el.style.opacity = "1";
-                    }, 50);
+                         el.style.display = "block"; // Hiện phần tử
+                         el.style.opacity = "0"; // Bắt đầu từ ẩn
+                         el.style.transition = "opacity 0.5s ease-in-out";
+
+                         setTimeout(() => {
+                              el.style.opacity = "1"; // Hiện dần
+                         }, 50);
+                    }, index * 300); // 300ms mỗi phần tử xuất hiện
                });
 
           }, 500);
-     })
+     });
+
+
      // Kiểm tra WebGL có hoạt động không
      var canvas = document.getElementById("sakura");
      if (canvas) {
@@ -922,44 +929,225 @@ function toggleDropdown() {
 }
 
 
-window.addEventListener("load", function () {
-     setTimeout(() => {
-          document.getElementById("loading-screen").classList.add("loaded");
-     }, 1000); // Hiển thị loading tối thiểu 1 giây trước khi ẩn
-});
-
 document.addEventListener("contextmenu", function (event) {
-     event.preventDefault(); // Chặn chuột phải
-     alert("Ai cho xem");
+     event.preventDefault(); // Chặn menu chuột phải mặc định
+
+     // Cập nhật selectedText khi nhấn chuột phải
+     selectedText = getSelectedText(event.target);
+
+     if (!selectedText) {
+          console.warn("Không có văn bản nào được chọn!");
+     } else {
+          console.log("Đã chọn: ", selectedText);
+     }
+
+     showCustomMenu(event.pageX, event.pageY);
 });
 
+
+
+let selectedText = ""; // Lưu nội dung đã chọn
+
+function showCustomMenu(x, y) {
+     let menu = document.getElementById("custom-menu");
+
+     if (!menu) {
+          menu = document.createElement("div");
+          menu.id = "custom-menu";
+          document.body.appendChild(menu);
+
+          // Thêm CSS cho menu
+          menu.style.position = "absolute";
+          menu.style.background = "rgba(50, 50, 50, 0.95)";
+          menu.style.color = "#fff";
+          menu.style.padding = "10px 0";
+          menu.style.borderRadius = "8px";
+          menu.style.boxShadow = "0px 5px 15px rgba(0, 0, 0, 0.3)";
+          menu.style.zIndex = "1000";
+          menu.style.minWidth = "150px";
+          menu.style.fontFamily = "Arial, sans-serif";
+          menu.style.transition = "opacity 0.2s ease-in-out, transform 0.2s ease-in-out";
+          menu.style.opacity = "0";
+          menu.style.transform = "scale(0.8)";
+     }
+
+     // Nội dung menu tùy chỉnh
+     menu.innerHTML = `
+         <div class="menu-item" onclick="copyText()">📋 Sao chép</div>
+         <div class="menu-item" onclick="reloadPage()">🔄 Tải lại trang</div>
+     `;
+     const windowWidth = window.innerWidth;
+     const windowHeight = window.innerHeight;
+     const menuWidth = 200; // Ước lượng chiều rộng menu
+     const menuHeight = 100; // Ước lượng chiều cao menu
+
+     // Điều chỉnh vị trí nếu menu bị tràn ra ngoài phải
+     if (x + menuWidth > windowWidth) {
+          x = windowWidth - menuWidth - 10; // Dịch menu sang trái
+     }
+
+     // Điều chỉnh vị trí nếu menu bị tràn ra ngoài dưới
+     if (y + menuHeight > windowHeight) {
+          y = y - menuHeight - 10; // Dịch menu lên trên
+     }
+     // Định vị menu tại vị trí chuột
+     menu.style.left = x + "px";
+     menu.style.top = y + "px";
+     menu.style.display = "block";
+
+     // Hiệu ứng hiển thị
+     setTimeout(() => {
+          menu.style.opacity = "1";
+          menu.style.transform = "scale(1)";
+     }, 10);
+
+     // Ẩn menu khi click ra ngoài
+     document.addEventListener("click", function hideMenu() {
+          menu.style.opacity = "0";
+          menu.style.transform = "scale(0.8)";
+          setTimeout(() => {
+               menu.style.display = "none";
+          }, 200);
+          document.removeEventListener("click", hideMenu);
+     });
+}
+
+// 🎨 **Thêm CSS cho menu-item**
+const style = document.createElement("style");
+style.innerHTML = `
+     .menu-item {
+         padding: 10px 20px;
+         cursor: pointer;
+         transition: background 0.2s, color 0.2s;
+     }
+ 
+     .menu-item:hover {
+         background: #4CAF50;
+         color: white;
+     }
+ 
+     .menu-item:first-child {
+         border-top-left-radius: 8px;
+         border-top-right-radius: 8px;
+     }
+ 
+     .menu-item:last-child {
+         border-bottom-left-radius: 8px;
+         border-bottom-right-radius: 8px;
+     }
+ `;
+document.head.appendChild(style);
+
+// 🎯 **Hàm lấy nội dung được chọn**
+function getSelectedText(target) {
+     let text = window.getSelection().toString().trim();
+
+     if (!text && target && target.nodeType === Node.ELEMENT_NODE) {
+          text = target.innerText.trim();
+     }
+
+     console.log("Văn bản đã chọn:", text); // Kiểm tra trên console
+     return text;
+}
+
+
+// 🎯 **Hàm Copy Cũ cho trình duyệt không hỗ trợ clipboard API**
+function copyText() {
+     if (!selectedText || selectedText.trim() === "") {
+          showPopup("Please select text before copying!!!");
+          return;
+     }
+
+     navigator.clipboard.writeText(selectedText).then(() => {
+          showPopup("Copied: " + selectedText);
+     }).catch(err => {
+          console.error("Error copying: ", err);
+          showPopup("Cannot copy text.");
+     });
+}
+
+
+// 🎯 **Hàm Reload Trang**
+function reloadPage() {
+     showPopup("Reloading website...");
+     setTimeout(() => {
+          location.reload();
+     }, 1000); // Đợi 1 giây trước khi reload
+}
 document.addEventListener("keydown", function (event) {
      if (event.key === "F12" ||
           (event.ctrlKey && event.shiftKey && event.key === "I") ||
           (event.ctrlKey && event.shiftKey && event.key === "J") ||
           (event.ctrlKey && event.key === "U")) {
-          event.preventDefault(); // Chặn F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-          alert("Ai cho xem");
+          event.preventDefault(); // Chặn các phím mở Developer Tools
+          showPopup("Bắt quả tang kid ấn f12 xem code XD");
      }
 });
 
-// Phát hiện mở Developer Tools và cảnh báo
+// 🎯 Phát hiện mở Developer Tools và cảnh báo
 setInterval(function () {
      let before = new Date().getTime();
      debugger;
      let after = new Date().getTime();
      if (after - before > 200) {
-          alert("Ai cho xem");
-          window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // Chuyển hướng về trang trống
+          showPopup("Gan đấy");
+          setTimeout(() => {
+               window.location.href = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"; // Chuyển hướng sau 3 giây
+          }, 3000);
      }
 }, 1000);
-window.addEventListener('touchmove', function (event) {
-     if (window.scrollY === 0) {
-          event.preventDefault();
+
+// 🎯 Hiệu ứng "fade-in" khi tải trang
+document.addEventListener("DOMContentLoaded", function () {
+     const elements = document.querySelectorAll(".fade-in");
+     elements.forEach((el, index) => {
+          setTimeout(() => {
+               el.style.visibility = "visible";
+               el.style.opacity = "1";
+          }, index * 300); // 300ms mỗi phần tử xuất hiện
+     });
+});
+function showPopup(message) {
+     let popupContainer = document.getElementById("popup-container");
+
+     // Tạo popup mới
+     let popup = document.createElement("div");
+     popup.classList.add("popup");
+     popup.innerText = message;
+
+     popupContainer.appendChild(popup);
+
+     // Hiển thị popup
+     setTimeout(() => {
+          popup.classList.add("show");
+     }, 10);
+
+     // Ẩn popup sau 2 giây và xóa khỏi DOM
+     setTimeout(() => {
+          popup.classList.remove("show");
+          setTimeout(() => {
+               popup.remove(); // Xóa hoàn toàn khỏi DOM
+          }, 500);
+     }, 2000);
+}
+function getSelectedText(target) {
+     let text = "";
+     if (window.getSelection) {
+          text = window.getSelection().toString();
+     } else if (document.selection && document.selection.type !== "Control") {
+          text = document.selection.createRange().text;
      }
-}, { passive: false });
-
-window.addEventListener("touchmove", function (event) {
-     event.preventDefault();
-}, { passive: false });
-
+     console.log("Selected Text:", text); // Kiểm tra trên console
+     return text;
+}
+document.addEventListener("DOMContentLoaded", function () {
+     document.querySelectorAll("img").forEach(img => {
+          img.style.userSelect = "none"; // Chặn bôi đen ảnh
+          img.style.webkitUserSelect = "none";
+          img.style.msUserSelect = "none";
+          img.style.mozUserSelect = "none";
+          img.addEventListener("dragstart", function (event) {
+               event.preventDefault(); // Ngăn kéo ảnh
+          });
+     });
+});
